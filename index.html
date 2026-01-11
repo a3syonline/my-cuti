@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MY Cuti</title>
+    <style>
+        :root { 
+            --bg: #0f172a; --card: #1e293b; --text: #f8fafc; --accent: #fbbf24; 
+            --border: #334155; --highlight: #38bdf8;
+        }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 2rem; line-height: 1.6; }
+        header { border-bottom: 1px solid var(--border); margin-bottom: 2rem; padding-bottom: 1rem; }
+        h1 { color: var(--accent); margin: 0; font-size: 2.5rem; }
+
+        .next-holiday { 
+            background: linear-gradient(135deg, #f59e0b, #d97706); 
+            padding: 25px; border-radius: 15px; margin-bottom: 30px; color: white;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .holiday-list { display: grid; grid-template-columns: 1fr; gap: 12px; }
+        .holiday-item { 
+            background: var(--card); padding: 18px; border-radius: 12px; 
+            display: flex; justify-content: space-between; align-items: center;
+            border: 1px solid var(--border); transition: 0.3s;
+        }
+        .date-box { text-align: center; min-width: 80px; border-right: 2px solid var(--accent); padding-right: 15px; }
+        .holiday-name { flex-grow: 1; padding-left: 20px; font-weight: bold; font-size: 1.1rem; }
+        .tag { font-size: 0.75rem; background: var(--border); padding: 5px 10px; border-radius: 6px; color: var(--highlight); font-weight: bold; }
+        
+        .status-badge { font-size: 0.8rem; padding: 10px 0; color: #94a3b8; display: block; }
+        .loading { text-align: center; padding: 40px; color: var(--highlight); font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>MY Cuti</h1>
+        <p>Maklumat Cuti Umum Kebangsaan (Sumber Rasmi: data.gov.my)</p>
+    </header>
+
+    <div class="next-holiday" id="next-holiday-box">
+        <small>Cuti Seterusnya:</small>
+        <h2 id="next-holiday-name" style="margin: 10px 0;">Menghubungkan ke Arkib Kerajaan...</h2>
+        <p id="next-holiday-date"></p>
+    </div>
+
+    <div class="holiday-list" id="holiday-list">
+        <div class="loading">Sedang memproses data rasmi kerajaan...</div>
+    </div>
+    <small id="data-status" class="status-badge"></small>
+
+    <script>
+        async function fetchHolidays() {
+            // Gunakan AllOrigins proxy untuk mengelakkan ralat CORS pada data.gov.my
+            const targetUrl = 'https://api.data.gov.my/holidays/national';
+            const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}`;
+            
+            try {
+                const response = await fetch(proxyUrl);
+                if (!response.ok) throw new Error();
+                
+                const wrapper = await response.json();
+                const data = JSON.parse(wrapper.contents); // Parse kandungan dari proxy
+
+                const currentYear = new Date().getFullYear();
+                // Tapis hanya untuk tahun semasa (2026/2027)
+                const filteredData = data.filter(h => h.date.startsWith(currentYear));
+                const sortedData = filteredData.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+                processHolidays(sortedData, `Data Rasmi Gov (${currentYear})`);
+            } catch (e) {
+                console.error("Gagal menarik data:", e);
+                document.getElementById('next-holiday-name').innerText = "Ralat Sambungan API Kerajaan";
+                document.getElementById('holiday-list').innerHTML = "<p style='text-align:center;'>Sila muat semula halaman atau pastikan internet anda stabil.</p>";
+            }
+        }
+
+        function processHolidays(data, statusText) {
+            document.getElementById('data-status').innerText = `Status: ${statusText}`;
+            displayHolidays(data);
+            setNextHoliday(data);
+        }
+
+        function displayHolidays(list) {
+            const container = document.getElementById('holiday-list');
+            container.innerHTML = "";
+
+            list.forEach(h => {
+                const dateObj = new Date(h.date);
+                const item = document.createElement('div');
+                item.className = 'holiday-item';
+                item.innerHTML = `
+                    <div class="date-box">
+                        <div style="font-size: 1.4rem; font-weight: bold;">${dateObj.getDate()}</div>
+                        <div style="font-size: 0.85rem; text-transform: uppercase;">${dateObj.toLocaleDateString('ms-MY', {month: 'short'})}</div>
+                    </div>
+                    <div class="holiday-name">${h.name}</div>
+                    <div class="tag">GOV.MY</div>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        function setNextHoliday(list) {
+            const today = new Date();
+            const futureHolidays = list.filter(h => new Date(h.date) >= today);
+            
+            if(futureHolidays.length > 0) {
+                const next = futureHolidays[0];
+                document.getElementById('next-holiday-name').innerText = next.name;
+                document.getElementById('next-holiday-date').innerText = new Date(next.date).toLocaleDateString('ms-MY', { 
+                    weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' 
+                });
+            } else {
+                document.getElementById('next-holiday-name').innerText = "Tiada cuti baki untuk tahun ini";
+            }
+        }
+
+        fetchHolidays();
+    </script>
+</body>
+</html>
