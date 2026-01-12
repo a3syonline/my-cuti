@@ -122,9 +122,7 @@
 
         .info { flex-grow: 1; }
         .name { font-weight: bold; font-size: 1.2rem; color: #1a1a1a; margin-bottom: 4px; }
-        .state-label { font-size: 0.85rem; color: #007bff; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; 
-
-}
+        .state-label { font-size: 0.85rem; color: #007bff; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; }
 
         .details {
             max-height: 0;
@@ -235,25 +233,20 @@
     ];
 
     const holidayHistory = {
-        "Chinese New Year": "Celebrates the beginning of a new year on the traditional lunisolar Chinese calendar.",
-        "Thaipusam": "A Hindu festival celebrated mostly by the Tamil community.",
-        "Hari Raya Puasa": "Marks the end of Ramadan, the Islamic holy month of fasting.",
-        "Wesak Day": "Commemorating the birth, enlightenment, and passing of Gautama Buddha.",
-        "National Day": "Independence from the British Empire on August 31, 1957.",
-        "Malaysia Day": "Commemorates the establishment of the Malaysian federation on September 16, 1963.",
-        "Deepavali": "The Hindu 'Festival of Lights', symbolising light over darkness.",
-        "Christmas": "Annual festival commemorating the birth of Jesus Christ.",
-        "Labor Day": "Dedicated to celebrating the economic and social achievements of workers.",
-        "New Year's Day": "The first day of the year in the Gregorian calendar.",
-        "Hari Gawai": "The harvest festival celebrated by the Dayak people in Sarawak. It marks the end of the harvesting 
-
-season and the beginning of a new farming year.",
-        "Gawai Dayak": "A harvest festival celebrated by the Dayak people in Sarawak. It marks the end of the harvesting season 
-
-and the beginning of a new farming year.",
-        "Pesta Kaamatan": "The Harvest Festival celebrated annually in Sabah. It is celebrated by the Kadazan-Dusun and other 
-
-related ethnic groups to honor the Rice Spirit."
+        "Chinese New Year": "Celebrates the beginning of a new year on the traditional lunisolar Chinese calendar. It is a time for family reunions and honoring ancestors.",
+        "Thaipusam": "A Hindu festival celebrated mostly by the Tamil community. It commemorates the occasion when Parvati gave Murugan a Vel (spear) so he could vanquish the evil demon Soorapadman.",
+        "Hari Raya Puasa": "Also known as Eid al-Fitr, it marks the end of Ramadan, the Islamic holy month of fasting. It is a time of forgiveness and thanksgiving.",
+        "Wesak Day": "The most important festival for Buddhists, commemorating the birth, enlightenment, and passing of Gautama Buddha.",
+        "National Day": "Known as Merdeka Day, it celebrates the Federation of Malaya's independence from the British Empire on August 31, 1957.",
+        "Malaysia Day": "Commemorates the establishment of the Malaysian federation on September 16, 1963, joining Malaya, North Borneo (Sabah), Sarawak, and Singapore.",
+        "Deepavali": "The Hindu 'Festival of Lights', symbolising the spiritual victory of light over darkness, good over evil, and knowledge over ignorance.",
+        "Christmas": "An annual festival commemorating the birth of Jesus Christ, observed as a religious and cultural celebration among billions of people around the world.",
+        "Prophet Muhammad's Birthday": "Commonly known as Maulidur Rasul, it is the observance of the birthday of the Islamic prophet Muhammad.",
+        "Labor Day": "A day dedicated to celebrating the economic and social achievements of workers.",
+        "New Year's Day": "The first day of the year in the Gregorian calendar, celebrated worldwide with fireworks and resolutions.",
+        "Hari Gawai": "The harvest festival celebrated by the Dayak people in Sarawak. It marks the end of the harvesting season and the beginning of a new farming year.",
+        "Gawai Dayak": "A harvest festival celebrated by the Dayak people in Sarawak. It marks the end of the harvesting season and the beginning of a new farming year.",
+        "Pesta Kaamatan": "The Harvest Festival celebrated annually in Sabah. It is celebrated by the Kadazan-Dusun and other related ethnic groups to honor the Rice Spirit."
     };
 
     document.getElementById('greeting').innerText = quotes[Math.floor(Math.random() * quotes.length)];
@@ -266,11 +259,8 @@ related ethnic groups to honor the Rice Spirit."
         listContainer.innerHTML = '';
         loadingDiv.style.display = 'block';
 
-        const url = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(CAL_ID)}/events?key=${API_KEY}
-
-&timeMin=${selectedYear}-01-01T00:00:00Z&timeMax=${selectedYear}-12-
-
-31T23:59:59Z&singleEvents=true&orderBy=startTime&fields=items(start,summary,description)`;
+        // URL logic fixed to be on a single line
+        const url = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(CAL_ID)}/events?key=${API_KEY}&timeMin=${selectedYear}-01-01T00:00:00Z&timeMax=${selectedYear}-12-31T23:59:59Z&singleEvents=true&orderBy=startTime&fields=items(start,summary,description)`;
 
         try {
             const response = await fetch(url);
@@ -290,7 +280,6 @@ related ethnic groups to honor the Rice Spirit."
 
             allHolidays = data.items || [];
             
-            // Only add if not already present to avoid duplicates
             if (!allHolidays.some(h => h.summary.includes("Gawai"))) {
                 allHolidays.push(gawai1, gawai2);
                 allHolidays.sort((a, b) => new Date(a.start.date) - new Date(b.start.date));
@@ -326,20 +315,15 @@ related ethnic groups to honor the Rice Spirit."
             if (h.summary.includes("Observance")) return;
 
             const isNational = !h.description || h.description.toLowerCase().includes('national');
-            // Logic to show manual Gawai only for Sarawak or National
             const isGawai = h.summary.includes("Gawai");
-            const matchesFilter = (filter === 'National' || (h.description && h.description.includes(filter)) || isNational) || 
-
-(isGawai && (filter === 'Sarawak' || filter === 'National'));
+            const matchesFilter = (filter === 'National' || (h.description && h.description.includes(filter)) || isNational) || (isGawai && (filter === 'Sarawak' || filter === 'National'));
 
             if (matchesFilter) {
                 const date = new Date(h.start.date);
                 const day = date.getDate();
                 const month = date.toLocaleString('en-US', { month: 'short' });
                 
-                let history = "This is an official public holiday. Use this time to rest or spend quality time with loved 
-
-ones.";
+                let history = "This is an official public holiday. Use this time to rest or spend quality time with loved ones.";
                 for (let key in holidayHistory) {
                     if (h.summary.includes(key)) {
                         history = holidayHistory[key];
