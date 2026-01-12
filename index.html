@@ -3,187 +3,203 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MY Cuti</title>
+    <title>MY Cuti | Smart Holiday Planner</title>
     <style>
         :root {
             --primary: #003580;
             --accent: #ed1c24;
-            --bg: #f4f7f6;
+            --bg: #f0f2f5;
             --white: #ffffff;
-            --text: #2c3e50;
+            --text: #1a1a1a;
+            --secondary-text: #65676b;
+            --shadow: 0 4px 12px rgba(0,0,0,0.08);
         }
 
-        * { box-sizing: border-box; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); }
+        * { box-sizing: border-box; transition: all 0.25s ease; }
 
         body { 
-            font-family: 'Segoe UI', Roboto, sans-serif; 
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; 
             background: var(--bg); 
             margin: 0; 
-            width: 100%;
             color: var(--text);
-            overflow-x: hidden;
+            line-height: 1.6;
         }
 
         header { 
-            background: var(--primary); 
+            background: linear-gradient(135deg, var(--primary) 0%, #0056b3 100%);
             color: white; 
-            padding: 3rem 1rem; 
+            padding: 4rem 1rem; 
             text-align: center; 
             border-bottom: 6px solid var(--accent);
-            width: 100%;
+            clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%);
         }
 
         .main-wrapper {
-            width: 100%;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 0 15px;
+            max-width: 700px;
+            margin: -40px auto 40px;
+            padding: 0 20px;
         }
 
         .greeting-box {
-            background: #fff;
-            border-left: 5px solid var(--accent);
-            padding: 20px;
-            margin: -30px auto 25px;
-            border-radius: 12px;
+            background: var(--white);
+            padding: 25px;
+            border-radius: 16px;
             text-align: center;
-            font-style: italic;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            font-size: 1.1rem;
-            color: var(--primary);
+            box-shadow: var(--shadow);
+            border-bottom: 4px solid var(--accent);
+            margin-bottom: 25px;
         }
 
         .countdown-container {
             background: var(--white); 
-            margin-bottom: 20px; 
-            padding: 20px; 
-            border-radius: 12px; 
+            margin-bottom: 25px; 
+            padding: 25px; 
+            border-radius: 16px; 
             text-align: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-            border: 1px solid #eee;
+            box-shadow: var(--shadow);
         }
 
-        .countdown-container b { color: var(--accent); font-size: 1.2rem; }
+        .countdown-container b { color: var(--accent); font-size: 1.4rem; display: block; margin: 5px 0; }
 
         .filter-section { 
-            width: 100%; 
             position: sticky; 
-            top: 10px; 
+            top: 20px; 
             z-index: 100; 
-            margin-bottom: 25px;
+            margin-bottom: 30px;
             display: flex;
-            gap: 10px;
+            gap: 12px;
         }
 
         select { 
-            padding: 15px; 
+            padding: 16px; 
             border-radius: 12px; 
-            border: 2px solid var(--primary); 
+            border: none; 
             font-size: 1rem; 
-            background: white;
+            font-weight: 600;
+            background: var(--white);
             cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            outline: none;
-        }
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            flex: 1;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 
 
-        #stateFilter { flex: 2; }
-        #yearFilter { flex: 1; }
+24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 
+
+12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 1em;
+        }
 
         .holiday-card {
             background: var(--white); 
             padding: 20px; 
-            margin-bottom: 15px;
-            border-radius: 15px; 
+            margin-bottom: 16px;
+            border-radius: 18px; 
             cursor: pointer;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            border-left: 8px solid var(--primary);
-            width: 100%;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            border: 1px solid rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
         }
 
-        .holiday-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+        .holiday-card:hover { transform: scale(1.01); box-shadow: var(--shadow); }
 
         .card-header { display: flex; align-items: center; }
 
         .date-badge {
-            background: #f1f1f1; 
-            min-width: 75px; 
-            height: 75px;
-            border-radius: 12px; 
+            background: #f8f9fa; 
+            min-width: 70px; 
+            height: 70px;
+            border-radius: 14px; 
             display: flex; 
             flex-direction: column;
             justify-content: center; 
             align-items: center; 
             margin-right: 20px;
-            flex-shrink: 0;
+            border: 1px solid #eee;
         }
 
-        .date-badge b { font-size: 1.6rem; color: var(--accent); line-height: 1; }
-        .date-badge span { font-size: 0.8rem; color: #666; font-weight: bold; text-transform: uppercase; }
+        .date-badge b { font-size: 1.8rem; color: var(--primary); line-height: 1; }
+        .date-badge span { font-size: 0.75rem; color: var(--secondary-text); font-weight: 800; text-transform: uppercase; }
 
-        .info { flex-grow: 1; }
-        .name { font-weight: bold; font-size: 1.2rem; color: #1a1a1a; margin-bottom: 4px; }
-        .state-label { font-size: 0.85rem; color: #007bff; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; }
+        .info-pane { flex-grow: 1; }
+        .name { font-weight: 700; font-size: 1.25rem; color: var(--text); }
+        .status-pill { 
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            background: #e7f3ff;
+            color: #007bff;
+            margin-top: 5px;
+            font-weight: 600;
+        }
 
         .details {
             max-height: 0;
             opacity: 0;
             overflow: hidden;
-            font-size: 1rem;
-            color: #555;
-            line-height: 1.7;
-            border-top: 1px dashed #eee;
-            margin-top: 0;
+            font-size: 0.95rem;
+            color: var(--secondary-text);
+            transition: all 0.4s ease-out;
         }
 
-        .holiday-card.active { border-left-color: var(--accent); }
+        .holiday-card.active { border-left: 6px solid var(--accent); }
         
         .holiday-card.active .details {
-            max-height: 1000px;
+            max-height: 800px;
             opacity: 1;
-            padding-top: 15px;
+            padding-top: 20px;
             margin-top: 15px;
+            border-top: 1px solid #eee;
         }
 
-        .drill-down-note {
-            display: block;
-            margin-top: 10px;
+        .section-label {
+            color: var(--primary);
+            font-weight: 800;
+            text-transform: uppercase;
             font-size: 0.8rem;
-            color: #999;
-            font-style: italic;
+            display: block;
+            margin-bottom: 5px;
         }
+
+        #loading { text-align: center; padding: 40px; }
+        .spinner {
+            width: 40px; height: 40px; border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
         @media (max-width: 600px) {
-            header { padding: 2.5rem 1rem; }
-            .name { font-size: 1.1rem; }
-            .date-badge { min-width: 65px; height: 65px; margin-right: 15px; }
-            .date-badge b { font-size: 1.3rem; }
-            .filter-section { flex-direction: column; }
+            header { padding: 3rem 1rem; }
+            .filter-section { flex-direction: column; top: 10px; }
         }
-
-        #loading { text-align: center; padding: 50px; font-weight: bold; color: var(--primary); font-size: 1.2rem; }
     </style>
 </head>
 <body>
 
 <header>
-    <h1 style="margin:0; letter-spacing:4px; font-size: 2.5rem;">MY Cuti</h1>
-    <p style="opacity: 0.9; margin-top: 5px;">Plan Your Future, Enjoy Your Rest</p>
+    <h1 style="margin:0; letter-spacing:2px; font-size: 2.8rem;">MY Cuti</h1>
+    <p style="opacity: 0.9; font-weight: 300;">Your Guide to Malaysian Public Holidays</p>
 </header>
 
 <div class="main-wrapper">
-    <div class="greeting-box" id="greeting">"Welcome!"</div>
+    <div class="greeting-box" id="greeting">...</div>
 
-    <div class="countdown-container" id="next-holiday-box">Synchronizing schedule...</div>
+    <div class="countdown-container" id="next-holiday-box">
+        <div class="spinner"></div>
+        Syncing with Malaysian Calendar...
+    </div>
 
     <div class="filter-section">
         <select id="stateFilter" onchange="displayHolidays()">
-            <option value="National">🌍 All Malaysia (National)</option>
-            <optgroup label="Federal Territories">
+            <option value="National">🌍 All Malaysia</option>
+            <optgroup label="States & Territories">
                 <option value="Kuala Lumpur">Kuala Lumpur</option>
-                <option value="Putrajaya">Putrajaya</option>
-                <option value="Labuan">Labuan</option>
-            </optgroup>
-            <optgroup label="States">
                 <option value="Johor">Johor</option>
                 <option value="Kedah">Kedah</option>
                 <option value="Kelantan">Kelantan</option>
@@ -193,18 +209,18 @@
                 <option value="Penang">Penang</option>
                 <option value="Perak">Perak</option>
                 <option value="Perlis">Perlis</option>
+                <option value="Putrajaya">Putrajaya</option>
                 <option value="Sabah">Sabah</option>
                 <option value="Sarawak" selected>Sarawak</option>
                 <option value="Selangor">Selangor</option>
                 <option value="Terengganu">Terengganu</option>
+                <option value="Labuan">Labuan</option>
             </optgroup>
         </select>
-
-        <select id="yearFilter" onchange="fetchHolidays()">
-        </select>
+        <select id="yearFilter" onchange="fetchHolidays()"></select>
     </div>
 
-    <div id="loading">Updating dates...</div>
+    <div id="loading" style="display:none;"><div class="spinner"></div></div>
     <div id="list"></div>
 </div>
 
@@ -213,96 +229,95 @@
     const CAL_ID = 'en.malaysia#holiday@group.v.calendar.google.com';
     let allHolidays = [];
 
-    const currentYear = new Date().getFullYear();
-    const yearSelect = document.getElementById('yearFilter');
-    
-    for(let i = currentYear - 1; i <= currentYear + 1; i++) {
-        let opt = document.createElement('option');
-        opt.value = i;
-        opt.innerHTML = i;
-        if(i === currentYear) opt.selected = true;
-        yearSelect.appendChild(opt);
-    }
-
-    const quotes = [
-        "\"A holiday is not just rest, it is space for inspiration.\"",
-        "\"Plan your vacation, because you deserve it!\"",
-        "\"Time with family is the best investment.\"",
-        "\"Work hard, holiday harder!\"",
-        "\"Happy holidays! Don't forget to spend time with loved ones.\""
-    ];
-
     const holidayHistory = {
-        "Chinese New Year": "Celebrates the beginning of a new year on the traditional lunisolar Chinese calendar. It is a time for family reunions and honoring ancestors.",
-        "Thaipusam": "A Hindu festival celebrated mostly by the Tamil community. It commemorates the occasion when Parvati gave Murugan a Vel (spear) so he could vanquish the evil demon Soorapadman.",
-        "Hari Raya Puasa": "Also known as Eid al-Fitr, it marks the end of Ramadan, the Islamic holy month of fasting. It is a time of forgiveness and thanksgiving.",
-        "Wesak Day": "The most important festival for Buddhists, commemorating the birth, enlightenment, and passing of Gautama Buddha.",
-        "National Day": "Known as Merdeka Day, it celebrates the Federation of Malaya's independence from the British Empire on August 31, 1957.",
-        "Malaysia Day": "Commemorates the establishment of the Malaysian federation on September 16, 1963, joining Malaya, North Borneo (Sabah), Sarawak, and Singapore.",
-        "Deepavali": "The Hindu 'Festival of Lights', symbolising the spiritual victory of light over darkness, good over evil, and knowledge over ignorance.",
-        "Christmas": "An annual festival commemorating the birth of Jesus Christ, observed as a religious and cultural celebration among billions of people around the world.",
-        "Prophet Muhammad's Birthday": "Commonly known as Maulidur Rasul, it is the observance of the birthday of the Islamic prophet Muhammad.",
-        "Labor Day": "A day dedicated to celebrating the economic and social achievements of workers.",
-        "New Year's Day": "The first day of the year in the Gregorian calendar, celebrated worldwide with fireworks and resolutions.",
-        "Hari Gawai": "The harvest festival celebrated by the Dayak people in Sarawak. It marks the end of the harvesting season and the beginning of a new farming year.",
-        "Gawai Dayak": "A harvest festival celebrated by the Dayak people in Sarawak. It marks the end of the harvesting season and the beginning of a new farming year.",
-        "Pesta Kaamatan": "The Harvest Festival celebrated annually in Sabah. It is celebrated by the Kadazan-Dusun and other related ethnic groups to honor the Rice Spirit."
+        "Chinese New Year": "A traditional festival celebrating the beginning of a new year on the Chinese calendar. It is 
+
+characterized by family reunion dinners, the giving of 'Ang Pow', and vibrant lion dances to ward off evil spirits.",
+        "Thaipusam": "A Hindu festival celebrated mostly by the Tamil community. It honors Lord Murugan and involves a grand 
+
+procession where devotees carry 'kavadis' as an act of devotion and penance.",
+        "Hari Raya Puasa": "Also known as Eid al-Fitr, it marks the end of Ramadan, the Islamic holy month of fasting. It is a 
+
+time for forgiveness, prayer, and visiting relatives to strengthen communal bonds.",
+        "Wesak Day": "The most significant day for Buddhists, commemorating the birth, enlightenment, and passing (Nirvana) of 
+
+Gautama Buddha. Devotees visit temples to offer prayers and participate in candlelit processions.",
+        "National Day": "Commemorating the independence of the Federation of Malaya from British rule on August 31, 1957. It is 
+
+a day of patriotic parades and displays of national unity.",
+        "Malaysia Day": "Marking the establishment of the Malaysian federation on September 16, 1963, when Malaya, North Borneo 
+
+(Sabah), Sarawak, and Singapore joined together.",
+        "Deepavali": "The Hindu Festival of Lights symbolizing the victory of light over darkness and good over evil. Homes are 
+
+decorated with 'kolams' and oil lamps are lit to welcome prosperity.",
+        "Christmas": "An annual festival commemorating the birth of Jesus Christ. In Malaysia, it is celebrated with shopping 
+
+mall decorations, gift exchanges, and open houses among friends and family.",
+        "Hari Gawai": "A major harvest festival celebrated by the Dayak people in Sarawak. It marks the end of the harvesting 
+
+season and is celebrated with traditional dances, 'Tuak' (rice wine), and thanksgiving ceremonies.",
+        "Pesta Kaamatan": "The Kadazan-Dusun harvest festival in Sabah. It honors the Rice Spirit (Bambazon) and features the 
+
+Unduk Ngadau beauty pageant and cultural performances.",
+        "Labor Day": "A global celebration of workers and the labor movement, acknowledging the contributions of the workforce 
+
+to the nation's growth.",
+        "New Year's Day": "The first day of the Gregorian calendar, celebrated with fireworks and countdown events across major 
+
+cities."
     };
 
-    document.getElementById('greeting').innerText = quotes[Math.floor(Math.random() * quotes.length)];
+    const setupYearFilter = () => {
+        const currentYear = new Date().getFullYear();
+        const yearSelect = document.getElementById('yearFilter');
+        for(let i = currentYear - 1; i <= currentYear + 1; i++) {
+            yearSelect.add(new Option(i, i, i === currentYear, i === currentYear));
+        }
+    };
 
     async function fetchHolidays() {
-        const selectedYear = document.getElementById('yearFilter').value;
+        const year = document.getElementById('yearFilter').value;
         const listContainer = document.getElementById('list');
         const loadingDiv = document.getElementById('loading');
-        
         listContainer.innerHTML = '';
         loadingDiv.style.display = 'block';
 
-        // URL logic fixed to be on a single line
-        const url = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(CAL_ID)}/events?key=${API_KEY}&timeMin=${selectedYear}-01-01T00:00:00Z&timeMax=${selectedYear}-12-31T23:59:59Z&singleEvents=true&orderBy=startTime&fields=items(start,summary,description)`;
+        const url = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(CAL_ID)}/events?key=${API_KEY}
+
+&timeMin=${year}-01-01T00:00:00Z&timeMax=${year}-12-31T23:59:59Z&singleEvents=true&orderBy=startTime`;
 
         try {
             const response = await fetch(url);
             const data = await response.json();
-            
-            // MANUAL ADDITION OF HARI GAWAI
-            const gawai1 = {
-                summary: "Hari Gawai",
-                start: { date: `${selectedYear}-06-01` },
-                description: "Regional Holiday (Sarawak)"
-            };
-            const gawai2 = {
-                summary: "Hari Gawai (Day 2)",
-                start: { date: `${selectedYear}-06-02` },
-                description: "Regional Holiday (Sarawak)"
-            };
-
             allHolidays = data.items || [];
             
             if (!allHolidays.some(h => h.summary.includes("Gawai"))) {
-                allHolidays.push(gawai1, gawai2);
+                allHolidays.push(
+                    { summary: "Hari Gawai", start: { date: `${year}-06-01` }, description: "Regional Holiday (Sarawak)" },
+                    { summary: "Hari Gawai (Day 2)", start: { date: `${year}-06-02` }, description: "Regional Holiday 
+
+(Sarawak)" }
+                );
                 allHolidays.sort((a, b) => new Date(a.start.date) - new Date(b.start.date));
             }
 
             loadingDiv.style.display = 'none';
             updateCountdown();
             displayHolidays();
-        } catch (error) {
-            loadingDiv.innerHTML = "<span style='color:red'>Connectivity error. Please check your internet connection.</span>";
+        } catch (e) {
+            loadingDiv.innerHTML = "Error loading dates. Check connection.";
         }
     }
 
     function updateCountdown() {
-        const today = new Date();
-        const next = allHolidays.find(h => new Date(h.start.date) >= today && !h.summary.includes("Observance"));
-        const countdownBox = document.getElementById('next-holiday-box');
-        
+        const now = new Date();
+        const next = allHolidays.find(h => new Date(h.start.date) >= now && !h.summary.includes("Observance"));
         if (next) {
-            const diffDays = Math.ceil((new Date(next.start.date) - today) / (1000 * 60 * 60 * 24));
-            countdownBox.innerHTML = `Next Holiday: <b>${next.summary}</b> <br> (In <b>${diffDays} days</b>)`;
-        } else {
-            countdownBox.innerHTML = "No upcoming dates found.";
+            const diff = Math.ceil((new Date(next.start.date) - now) / (1000 * 60 * 60 * 24));
+            document.getElementById('next-holiday-box').innerHTML = `Upcoming: <b>${next.summary}</b> in <b>${diff} ${diff === 
+
+1 ? 'day' : 'days'}</b>`;
         }
     }
 
@@ -313,43 +328,38 @@
 
         allHolidays.forEach(h => {
             if (h.summary.includes("Observance")) return;
-
             const isNational = !h.description || h.description.toLowerCase().includes('national');
-            const isGawai = h.summary.includes("Gawai");
-            const matchesFilter = (filter === 'National' || (h.description && h.description.includes(filter)) || isNational) || (isGawai && (filter === 'Sarawak' || filter === 'National'));
+            const isRegionalMatch = h.description && h.description.includes(filter);
+            const isGawaiSarawak = h.summary.includes("Gawai") && filter === "Sarawak";
 
-            if (matchesFilter) {
+            if (filter === 'National' || isNational || isRegionalMatch || isGawaiSarawak) {
                 const date = new Date(h.start.date);
                 const day = date.getDate();
                 const month = date.toLocaleString('en-US', { month: 'short' });
                 
-                let history = "This is an official public holiday. Use this time to rest or spend quality time with loved ones.";
+                let aboutText = "This day is observed as a public holiday in Malaysia to allow citizens to rest or participate 
+
+in local celebrations.";
                 for (let key in holidayHistory) {
-                    if (h.summary.includes(key)) {
-                        history = holidayHistory[key];
-                        break;
-                    }
+                    if (h.summary.includes(key)) aboutText = holidayHistory[key];
                 }
 
                 const card = document.createElement('div');
                 card.className = 'holiday-card';
-                card.onclick = function() { this.classList.toggle('active'); };
-                
+                card.onclick = () => card.classList.toggle('active');
                 card.innerHTML = `
                     <div class="card-header">
                         <div class="date-badge"><b>${day}</b><span>${month}</span></div>
-                        <div class="info">
+                        <div class="info-pane">
                             <div class="name">${h.summary}</div>
-                            <div class="state-label">📍 ${isGawai ? 'Sarawak' : (isNational ? 'National' : filter)}</div>
+                            <div class="status-pill">${isNational ? 'Whole Malaysia' : filter}</div>
                         </div>
                     </div>
                     <div class="details">
-                        <strong>Holiday Background:</strong><br>
-                        ${history}
-                        <br><br>
-                        <strong>Info:</strong><br>
-                        ${h.description || "Public holiday in Malaysia."}
-                        <span class="drill-down-note">Click to close.</span>
+                        <span class="section-label">About</span>
+                        <p style="margin: 0 0 15px 0;">${aboutText}</p>
+                        <span class="section-label">Info</span>
+                        <p style="margin: 0;">${h.description || "Official gazetted public holiday."}</p>
                     </div>
                 `;
                 list.appendChild(card);
@@ -357,6 +367,8 @@
         });
     }
 
+    document.getElementById('greeting').innerText = "\"Adventure awaits in every corner of the nation.\"";
+    setupYearFilter();
     fetchHolidays();
 </script>
 </body>
