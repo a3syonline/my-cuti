@@ -1,124 +1,340 @@
 <!DOCTYPE html>
-<html lang="ms">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MY Cuti</title>
     <style>
-        :root { 
-            --bg: #0f172a; --card: #1e293b; --text: #f8fafc; --accent: #fbbf24; 
-            --border: #334155; --highlight: #38bdf8;
-        }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 2rem; line-height: 1.6; }
-        header { border-bottom: 1px solid var(--border); margin-bottom: 2rem; padding-bottom: 1rem; }
-        h1 { color: var(--accent); margin: 0; font-size: 2.5rem; }
-
-        .next-holiday { 
-            background: linear-gradient(135deg, #f59e0b, #d97706); 
-            padding: 25px; border-radius: 15px; margin-bottom: 30px; color: white;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        :root {
+            --primary: #003580;
+            --accent: #ed1c24;
+            --bg: #f4f7f6;
+            --white: #ffffff;
+            --text: #2c3e50;
         }
 
-        .holiday-list { display: grid; grid-template-columns: 1fr; gap: 12px; }
-        .holiday-item { 
-            background: var(--card); padding: 18px; border-radius: 12px; 
-            display: flex; justify-content: space-between; align-items: center;
-            border: 1px solid var(--border); transition: 0.3s;
+        * { box-sizing: border-box; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); }
+
+        body { 
+            font-family: 'Segoe UI', Roboto, sans-serif; 
+            background: var(--bg); 
+            margin: 0; 
+            width: 100%;
+            color: var(--text);
+            overflow-x: hidden;
         }
-        .date-box { text-align: center; min-width: 80px; border-right: 2px solid var(--accent); padding-right: 15px; }
-        .holiday-name { flex-grow: 1; padding-left: 20px; font-weight: bold; font-size: 1.1rem; }
-        .tag { font-size: 0.75rem; background: var(--border); padding: 5px 10px; border-radius: 6px; color: var(--highlight); font-weight: bold; }
+
+        header { 
+            background: var(--primary); 
+            color: white; 
+            padding: 3rem 1rem; 
+            text-align: center; 
+            border-bottom: 6px solid var(--accent);
+            width: 100%;
+        }
+
+        .main-wrapper {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+
+        .greeting-box {
+            background: #fff;
+            border-left: 5px solid var(--accent);
+            padding: 20px;
+            margin: -30px auto 25px;
+            border-radius: 12px;
+            text-align: center;
+            font-style: italic;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            font-size: 1.1rem;
+            color: var(--primary);
+        }
+
+        .countdown-container {
+            background: var(--white); 
+            margin-bottom: 20px; 
+            padding: 20px; 
+            border-radius: 12px; 
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            border: 1px solid #eee;
+        }
+
+        .countdown-container b { color: var(--accent); font-size: 1.2rem; }
+
+        .filter-section { 
+            width: 100%; 
+            position: sticky; 
+            top: 10px; 
+            z-index: 100; 
+            margin-bottom: 25px;
+            display: flex;
+            gap: 10px;
+        }
+
+        select { 
+            padding: 15px; 
+            border-radius: 12px; 
+            border: 2px solid var(--primary); 
+            font-size: 1rem; 
+            background: white;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            outline: none;
+        }
+
+        #stateFilter { flex: 2; }
+        #yearFilter { flex: 1; }
+
+        .holiday-card {
+            background: var(--white); 
+            padding: 20px; 
+            margin-bottom: 15px;
+            border-radius: 15px; 
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            border-left: 8px solid var(--primary);
+            width: 100%;
+        }
+
+        .holiday-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+
+        .card-header { display: flex; align-items: center; }
+
+        .date-badge {
+            background: #f1f1f1; 
+            min-width: 75px; 
+            height: 75px;
+            border-radius: 12px; 
+            display: flex; 
+            flex-direction: column;
+            justify-content: center; 
+            align-items: center; 
+            margin-right: 20px;
+            flex-shrink: 0;
+        }
+
+        .date-badge b { font-size: 1.6rem; color: var(--accent); line-height: 1; }
+        .date-badge span { font-size: 0.8rem; color: #666; font-weight: bold; text-transform: uppercase; }
+
+        .info { flex-grow: 1; }
+        .name { font-weight: bold; font-size: 1.2rem; color: #1a1a1a; margin-bottom: 4px; }
+        .state-label { font-size: 0.85rem; color: #007bff; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        .details {
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+            font-size: 1rem;
+            color: #555;
+            line-height: 1.7;
+            border-top: 1px dashed #eee;
+            margin-top: 0;
+        }
+
+        .holiday-card.active { border-left-color: var(--accent); }
         
-        .status-badge { font-size: 0.8rem; padding: 10px 0; color: #94a3b8; display: block; }
-        .loading { text-align: center; padding: 40px; color: var(--highlight); font-weight: bold; }
+        .holiday-card.active .details {
+            max-height: 1000px;
+            opacity: 1;
+            padding-top: 15px;
+            margin-top: 15px;
+        }
+
+        .drill-down-note {
+            display: block;
+            margin-top: 10px;
+            font-size: 0.8rem;
+            color: #999;
+            font-style: italic;
+        }
+
+        @media (max-width: 600px) {
+            header { padding: 2.5rem 1rem; }
+            .name { font-size: 1.1rem; }
+            .date-badge { min-width: 65px; height: 65px; margin-right: 15px; }
+            .date-badge b { font-size: 1.3rem; }
+            .filter-section { flex-direction: column; }
+        }
+
+        #loading { text-align: center; padding: 50px; font-weight: bold; color: var(--primary); font-size: 1.2rem; }
     </style>
 </head>
 <body>
 
-    <header>
-        <h1>MY Cuti</h1>
-        <p>Maklumat Cuti Umum Kebangsaan (Sumber Rasmi: data.gov.my)</p>
-    </header>
+<header>
+    <h1 style="margin:0; letter-spacing:4px; font-size: 2.5rem;">MY Cuti</h1>
+    <p style="opacity: 0.9; margin-top: 5px;">Plan Your Future, Enjoy Your Rest</p>
+</header>
 
-    <div class="next-holiday" id="next-holiday-box">
-        <small>Cuti Seterusnya:</small>
-        <h2 id="next-holiday-name" style="margin: 10px 0;">Menghubungkan ke Arkib Kerajaan...</h2>
-        <p id="next-holiday-date"></p>
+<div class="main-wrapper">
+    <div class="greeting-box" id="greeting">"Welcome!"</div>
+
+    <div class="countdown-container" id="next-holiday-box">Fetching calendar data...</div>
+
+    <div class="filter-section">
+        <select id="stateFilter" onchange="displayHolidays()">
+            <option value="National">🌍 All Malaysia (National)</option>
+            <optgroup label="Federal Territories">
+                <option value="Kuala Lumpur">Kuala Lumpur</option>
+                <option value="Putrajaya">Putrajaya</option>
+                <option value="Labuan">Labuan</option>
+            </optgroup>
+            <optgroup label="States">
+                <option value="Johor">Johor</option>
+                <option value="Kedah">Kedah</option>
+                <option value="Kelantan">Kelantan</option>
+                <option value="Melaka">Melaka</option>
+                <option value="Negeri Sembilan">Negeri Sembilan</option>
+                <option value="Pahang">Pahang</option>
+                <option value="Penang">Penang</option>
+                <option value="Perak">Perak</option>
+                <option value="Perlis">Perlis</option>
+                <option value="Sabah">Sabah</option>
+                <option value="Sarawak">Sarawak</option>
+                <option value="Selangor">Selangor</option>
+                <option value="Terengganu">Terengganu</option>
+            </optgroup>
+        </select>
+
+        <select id="yearFilter" onchange="fetchHolidays()">
+            </select>
     </div>
 
-    <div class="holiday-list" id="holiday-list">
-        <div class="loading">Sedang memproses data rasmi kerajaan...</div>
-    </div>
-    <small id="data-status" class="status-badge"></small>
+    <div id="loading">Please wait a moment...</div>
+    <div id="list"></div>
+</div>
 
-    <script>
-        async function fetchHolidays() {
-            // Gunakan AllOrigins proxy untuk mengelakkan ralat CORS pada data.gov.my
-            const targetUrl = 'https://api.data.gov.my/holidays/national';
-            const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}`;
-            
-            try {
-                const response = await fetch(proxyUrl);
-                if (!response.ok) throw new Error();
+<script>
+    const API_KEY = 'AIzaSyAyfehFnI4U-rZwjCdlkJOmcNQm0VzmTIk';
+    const CAL_ID = 'en.malaysia#holiday@group.v.calendar.google.com';
+    let allHolidays = [];
+
+    // PRODUCTIVE AUTO-YEAR LOGIC
+    const currentYear = new Date().getFullYear();
+    const yearSelect = document.getElementById('yearFilter');
+    
+    // Creates options for Last Year, This Year, and Next Year automatically
+    for(let i = currentYear - 1; i <= currentYear + 1; i++) {
+        let opt = document.createElement('option');
+        opt.value = i;
+        opt.innerHTML = i;
+        if(i === currentYear) opt.selected = true;
+        yearSelect.appendChild(opt);
+    }
+
+    const quotes = [
+        "\"A holiday is not just rest, it is space for inspiration.\"",
+        "\"Plan your vacation, because you deserve it!\"",
+        "\"Time with family is the best investment.\"",
+        "\"Work hard, holiday harder!\"",
+        "\"Happy holidays! Don't forget to spend time with loved ones.\""
+    ];
+
+    const holidayHistory = {
+        "Chinese New Year": "Celebrates the beginning of a new year on the traditional lunisolar Chinese calendar. It is a time for family reunions and honoring ancestors.",
+        "Thaipusam": "A Hindu festival celebrated mostly by the Tamil community. It commemorates the occasion when Parvati gave Murugan a Vel (spear) so he could vanquish the evil demon Soorapadman.",
+        "Hari Raya Puasa": "Also known as Eid al-Fitr, it marks the end of Ramadan, the Islamic holy month of fasting. It is a time of forgiveness and thanksgiving.",
+        "Wesak Day": "The most important festival for Buddhists, commemorating the birth, enlightenment, and passing of Gautama Buddha.",
+        "National Day": "Known as Merdeka Day, it celebrates the Federation of Malaya's independence from the British Empire on August 31, 1957.",
+        "Malaysia Day": "Commemorates the establishment of the Malaysian federation on September 16, 1963, joining Malaya, North Borneo (Sabah), Sarawak, and Singapore.",
+        "Deepavali": "The Hindu 'Festival of Lights', symbolising the spiritual victory of light over darkness, good over evil, and knowledge over ignorance.",
+        "Christmas": "An annual festival commemorating the birth of Jesus Christ, observed as a religious and cultural celebration among billions of people around the world.",
+        "Prophet Muhammad's Birthday": "Commonly known as Maulidur Rasul, it is the observance of the birthday of the Islamic prophet Muhammad.",
+        "Labor Day": "A day dedicated to celebrating the economic and social achievements of workers.",
+        "New Year's Day": "The first day of the year in the Gregorian calendar, celebrated worldwide with fireworks and resolutions."
+    };
+
+    document.getElementById('greeting').innerText = quotes[Math.floor(Math.random() * quotes.length)];
+
+    async function fetchHolidays() {
+        const selectedYear = document.getElementById('yearFilter').value;
+        const listContainer = document.getElementById('list');
+        const loadingDiv = document.getElementById('loading');
+        
+        listContainer.innerHTML = '';
+        loadingDiv.style.display = 'block';
+
+        // URL uses the DYNAMIC selectedYear variable
+        const url = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(CAL_ID)}/events?key=${API_KEY}&timeMin=${selectedYear}-01-01T00:00:00Z&timeMax=${selectedYear}-12-31T23:59:59Z&singleEvents=true&orderBy=startTime&fields=items(start,summary,description)`;
+
+        try {
+            const response = await fetch(url);
+            const data = await response.json();
+            allHolidays = data.items || [];
+            loadingDiv.style.display = 'none';
+            updateCountdown();
+            displayHolidays();
+        } catch (error) {
+            loadingDiv.innerHTML = "<span style='color:red'>Error: Failed to load data. Please check API Key.</span>";
+        }
+    }
+
+    function updateCountdown() {
+        const today = new Date();
+        const next = allHolidays.find(h => new Date(h.start.date) >= today);
+        const countdownBox = document.getElementById('next-holiday-box');
+        
+        if (next) {
+            const diffDays = Math.ceil((new Date(next.start.date) - today) / (1000 * 60 * 60 * 24));
+            countdownBox.innerHTML = `Next Holiday: <b>${next.summary}</b> <br> (In <b>${diffDays} days</b>)`;
+        } else {
+            countdownBox.innerHTML = "No upcoming holidays found for this year.";
+        }
+    }
+
+    function displayHolidays() {
+        const list = document.getElementById('list');
+        const filter = document.getElementById('stateFilter').value;
+        list.innerHTML = '';
+
+        allHolidays.forEach(h => {
+            const isNational = !h.description || h.description.toLowerCase().includes('national');
+            const matchesFilter = filter === 'National' || (h.description && h.description.includes(filter)) || isNational;
+
+            if (matchesFilter) {
+                const date = new Date(h.start.date);
+                const day = date.getDate();
+                const month = date.toLocaleString('en-US', { month: 'short' });
                 
-                const wrapper = await response.json();
-                const data = JSON.parse(wrapper.contents); // Parse kandungan dari proxy
+                let history = "This is an official public holiday. Use this time to rest, travel, or spend quality time with family and friends.";
+                for (let key in holidayHistory) {
+                    if (h.summary.includes(key)) {
+                        history = holidayHistory[key];
+                        break;
+                    }
+                }
 
-                const currentYear = new Date().getFullYear();
-                // Tapis hanya untuk tahun semasa (2026/2027)
-                const filteredData = data.filter(h => h.date.startsWith(currentYear));
-                const sortedData = filteredData.sort((a, b) => new Date(a.date) - new Date(b.date));
-
-                processHolidays(sortedData, `Data Rasmi Gov (${currentYear})`);
-            } catch (e) {
-                console.error("Gagal menarik data:", e);
-                document.getElementById('next-holiday-name').innerText = "Ralat Sambungan API Kerajaan";
-                document.getElementById('holiday-list').innerHTML = "<p style='text-align:center;'>Sila muat semula halaman atau pastikan internet anda stabil.</p>";
-            }
-        }
-
-        function processHolidays(data, statusText) {
-            document.getElementById('data-status').innerText = `Status: ${statusText}`;
-            displayHolidays(data);
-            setNextHoliday(data);
-        }
-
-        function displayHolidays(list) {
-            const container = document.getElementById('holiday-list');
-            container.innerHTML = "";
-
-            list.forEach(h => {
-                const dateObj = new Date(h.date);
-                const item = document.createElement('div');
-                item.className = 'holiday-item';
-                item.innerHTML = `
-                    <div class="date-box">
-                        <div style="font-size: 1.4rem; font-weight: bold;">${dateObj.getDate()}</div>
-                        <div style="font-size: 0.85rem; text-transform: uppercase;">${dateObj.toLocaleDateString('ms-MY', {month: 'short'})}</div>
+                const card = document.createElement('div');
+                card.className = 'holiday-card';
+                card.onclick = function() { this.classList.toggle('active'); };
+                
+                card.innerHTML = `
+                    <div class="card-header">
+                        <div class="date-badge"><b>${day}</b><span>${month}</span></div>
+                        <div class="info">
+                            <div class="name">${h.summary}</div>
+                            <div class="state-label">📍 ${isNational ? 'National' : filter}</div>
+                        </div>
                     </div>
-                    <div class="holiday-name">${h.name}</div>
-                    <div class="tag">GOV.MY</div>
+                    <div class="details">
+                        <strong>Holiday Background:</strong><br>
+                        ${history}
+                        <br><br>
+                        <strong>Info:</strong><br>
+                        ${h.description || "Public holiday in Malaysia."}
+                        <span class="drill-down-note">Click to close.</span>
+                    </div>
                 `;
-                container.appendChild(item);
-            });
-        }
-
-        function setNextHoliday(list) {
-            const today = new Date();
-            const futureHolidays = list.filter(h => new Date(h.date) >= today);
-            
-            if(futureHolidays.length > 0) {
-                const next = futureHolidays[0];
-                document.getElementById('next-holiday-name').innerText = next.name;
-                document.getElementById('next-holiday-date').innerText = new Date(next.date).toLocaleDateString('ms-MY', { 
-                    weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' 
-                });
-            } else {
-                document.getElementById('next-holiday-name').innerText = "Tiada cuti baki untuk tahun ini";
+                list.appendChild(card);
             }
-        }
+        });
+    }
 
-        fetchHolidays();
-    </script>
+    fetchHolidays();
+</script>
 </body>
 </html>
