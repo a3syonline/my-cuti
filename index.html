@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -17,6 +17,7 @@
             color: var(--text); 
             width: 100%; 
             overflow-x: hidden;
+            /* Animated Rainbow Gradient Background */
             background: linear-gradient(120deg, #fdfcfb, #e2d1c3, #f5f7fa, #c3cfe2, #e0f2f1, #fff9e6);
             background-size: 600% 600%;
             animation: holidayGradient 20s ease infinite;
@@ -140,8 +141,8 @@
             greet: ["Gong Xi Fa Cai! May the new year bring you immense wealth, health, and happiness! 🧧"] 
         },
         "Raya": { 
-            about: "Hari Raya Aidilfitri celebrates the conclusion of Ramadan, the holy month of fasting. It is a season of forgiveness and renewal. Malaysians traditionally hold 'Open Houses,' welcoming friends and neighbors of all races to share traditional food like Ketupat, Rendang, and Lemang.", 
-            greet: ["Selamat Hari Raya Aidilfitri! Maaf Zahir dan Batin to you and your loved ones. 🌙"] 
+            about: "Hari Raya Aidilfitri celebrates the conclusion of Ramadan, the holy month of fasting. It is a season of forgiveness and renewal. Malaysians traditionally hold 'Open Houses,' welcoming friends and neighbors of all races to share traditional food like Ketupat, Rendang, and Lemang. \n\nHari Raya Haji (Eid al-Adha) commemorates the Prophet Ibrahim's willingness to sacrifice his son as an act of obedience to God. It marks the conclusion of the annual Hajj pilgrimage to Mecca. The day is observed with prayers and the 'Qurbani' (sacrifice), where meat is distributed to the needy to symbolize charity and equality.", 
+            greet: ["Selamat Hari Raya Aidilfitri! Maaf Zahir dan Batin to you and your loved ones. 🌙", "Selamat Hari Raya Haji! May your sacrifices be rewarded and your heart filled with peace."] 
         },
         "Kaamatan": { 
             about: "Pesta Kaamatan is a harvest thanksgiving festival celebrated by the Kadazan-Dusun community in Sabah. It honors the legend of Huminodun and the Rice Spirit, Bambazon. Key events include the Magavau ritual, Sugandoi singing competitions, and the Unduk Ngadau (Harvest Queen) pageant.", 
@@ -168,8 +169,8 @@
             greet: ["Merry Christmas! May your home be filled with the joy of the season and the warmth of love. 🎄"] 
         },
         "General": { 
-            about: "Malaysia is a multicultural nation that celebrates a wide variety of public holidays. These holidays are essential moments for reflection, community bonding, and respect for the diverse cultures and religions that make up the nation.", 
-            greet: ["Happy Holidays! Wishing you a wonderful and restful day. 😊"] 
+            about: "New Year's Day (January 1st) follows the Gregorian calendar and is celebrated globally to mark the start of a fresh year with resolutions and festivities. \n\nFederal Territory Day (February 1st) commemorates the transfer of Kuala Lumpur (1974), Labuan (1984), and Putrajaya (2001) to the Federal Government, serving as a symbol of national administration and unity.\n\nAwal Muharram marks the Islamic New Year, the first day of the month of Muharram. It commemorates the Hijrah (migration) of Prophet Muhammad from Mecca to Medina, representing a time of reflection and new spiritual beginnings.\n\nMaulidur Rasul is the observance of the birthday of Prophet Muhammad. In Malaysia, it is marked by processions and 'selawat' (praises) to honor his teachings of compassion and mercy.", 
+            greet: ["Happy New Year! May this year bring you new hope and success. 🎆", "Happy Federal Territory Day! Celebrating our vibrant cities. 🏙️", "Salam Awal Muharram. May this new Hijri year bring peace.", "Salam Maulidur Rasul. Let us reflect on the wisdom of the Prophet."] 
         }
     };
 
@@ -199,6 +200,15 @@
             if (selectedState === "National" ? isNational : (isNational || isStateMatch)) {
                 const d = new Date(h.date);
                 const info = CONTENT[h.cat] || CONTENT["General"];
+                
+                // Select specific greeting based on keyword matching
+                let greetingText = info.greet[0];
+                if (h.name.includes("Haji")) greetingText = info.greet[1] || info.greet[0];
+                else if (h.name.includes("New Year")) greetingText = info.greet[0];
+                else if (h.name.includes("Federal Territory")) greetingText = info.greet[1] || info.greet[0];
+                else if (h.name.includes("Muharram")) greetingText = info.greet[2] || info.greet[0];
+                else if (h.name.includes("Maulidur")) greetingText = info.greet[3] || info.greet[0];
+
                 const card = document.createElement('div');
                 card.className = `holiday-card ${isNational ? 'national' : 'state'}`;
                 card.onclick = () => card.classList.toggle('active');
@@ -213,7 +223,7 @@
                     <div class="drill-down">
                         <span class="section-label">Background</span>
                         <p style="margin:0; font-size:0.95rem; line-height: 1.5;">${info.about}</p>
-                        <div class="greeting-box">"${info.greet[0]}"</div>
+                        <div class="greeting-box">"${greetingText}"</div>
                     </div>
                 `;
                 list.appendChild(card);
