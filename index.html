@@ -13,11 +13,7 @@
         
         body { 
             font-family: 'Segoe UI', system-ui, sans-serif; 
-            margin: 0; 
-            color: var(--text); 
-            width: 100%; 
-            overflow-x: hidden;
-            /* Animated Rainbow Gradient Background */
+            margin: 0; color: var(--text); width: 100%; overflow-x: hidden;
             background: linear-gradient(120deg, #fdfcfb, #e2d1c3, #f5f7fa, #c3cfe2, #e0f2f1, #fff9e6);
             background-size: 600% 600%;
             animation: holidayGradient 20s ease infinite;
@@ -56,14 +52,14 @@
 </header>
 
 <div class="main-wrapper">
-    <div class="countdown-container" id="countdown">Loading Dataset...</div>
+    <div class="countdown-container" id="countdown">Loading...</div>
     <div class="controls">
         <select id="stateFilter" onchange="renderDisplay()">
             <option value="National">🌍 National Only</option>
             <option value="Kuala Lumpur">Kuala Lumpur</option>
             <option value="Labuan">Labuan</option>
             <option value="Putrajaya">Putrajaya</option>
-            <option value="Sabah">Sabah</option>
+            <option value="Sabah" selected>Sabah</option>
             <option value="Sarawak">Sarawak</option>
             <option value="Johor">Johor</option>
             <option value="Selangor">Selangor</option>
@@ -87,90 +83,113 @@
 </div>
 
 <script>
+    // 1. HARDCODED DATABASE (Strict 1-to-1 Mapping)
     const HOLIDAY_DB = {
         "2025": [
-            { name: "New Year's Day", date: "2025-01-01", isNational: true, cat: "General" },
-            { name: "Chinese New Year", date: "2025-01-29", isNational: true, cat: "CNY" },
-            { name: "Federal Territory Day", date: "2025-02-01", isNational: false, states: ["Kuala Lumpur", "Labuan", "Putrajaya"], cat: "General" },
-            { name: "Hari Raya Aidilfitri", date: "2025-03-31", isNational: true, cat: "Raya" },
-            { name: "Labour Day", date: "2025-05-01", isNational: true, cat: "General" },
-            { name: "National Day", date: "2025-08-31", isNational: true, cat: "Merdeka" },
-            { name: "Malaysia Day", date: "2025-09-16", isNational: true, cat: "MalaysiaDay" },
-            { name: "Christmas Day", date: "2025-12-25", isNational: true, cat: "Christmas" }
+            { name: "New Year's Day", date: "2025-01-01", isNational: true },
+            { name: "Chinese New Year", date: "2025-01-29", isNational: true },
+            { name: "Federal Territory Day", date: "2025-02-01", isNational: false, states: ["Kuala Lumpur", "Labuan", "Putrajaya"] },
+            { name: "Hari Raya Aidilfitri", date: "2025-03-31", isNational: true },
+            { name: "Labour Day", date: "2025-05-01", isNational: true },
+            { name: "National Day", date: "2025-08-31", isNational: true },
+            { name: "Malaysia Day", date: "2025-09-16", isNational: true },
+            { name: "Christmas Day", date: "2025-12-25", isNational: true }
         ],
         "2026": [
-            { name: "New Year's Day", date: "2026-01-01", isNational: true, cat: "General" },
-            { name: "Federal Territory Day", date: "2026-02-01", isNational: false, states: ["Kuala Lumpur", "Labuan", "Putrajaya"], cat: "General" },
-            { name: "Thaipusam", date: "2026-02-01", isNational: false, states: ["Kuala Lumpur", "Putrajaya", "Selangor", "Penang", "Perak", "Johor", "Negeri Sembilan"], cat: "General" },
-            { name: "Chinese New Year", date: "2026-02-17", isNational: true, cat: "CNY" },
-            { name: "Chinese New Year (Day 2)", date: "2026-02-18", isNational: true, cat: "CNY" },
-            { name: "Hari Raya Aidilfitri", date: "2026-03-20", isNational: true, cat: "Raya" },
-            { name: "Hari Raya Aidilfitri (Day 2)", date: "2026-03-21", isNational: true, cat: "Raya" },
-            { name: "Labour Day", date: "2026-05-01", isNational: true, cat: "General" },
-            { name: "Hari Raya Haji", date: "2026-05-27", isNational: true, cat: "Raya" },
-            { name: "Pesta Kaamatan", date: "2026-05-30", isNational: false, states: ["Sabah", "Labuan"], cat: "Kaamatan" },
-            { name: "Pesta Kaamatan (Day 2)", date: "2026-05-31", isNational: false, states: ["Sabah", "Labuan"], cat: "Kaamatan" },
-            { name: "Wesak Day", date: "2026-05-31", isNational: true, cat: "General" },
-            { name: "Hari Gawai", date: "2026-06-01", isNational: false, states: ["Sarawak"], cat: "Gawai" },
-            { name: "Hari Gawai (Day 2)", date: "2026-06-02", isNational: false, states: ["Sarawak"], cat: "Gawai" },
-            { name: "Awal Muharram", date: "2026-06-17", isNational: true, cat: "General" },
-            { name: "National Day (Merdeka)", date: "2026-08-31", isNational: true, cat: "Merdeka" },
-            { name: "Maulidur Rasul", date: "2026-08-25", isNational: true, cat: "General" },
-            { name: "Malaysia Day", date: "2026-09-16", isNational: true, cat: "MalaysiaDay" },
-            { name: "Deepavali", date: "2026-11-08", isNational: true, cat: "Deepavali" },
-            { name: "Christmas Day", date: "2026-12-25", isNational: true, cat: "Christmas" },
-            { name: "Sultan of Selangor's Birthday", date: "2026-12-11", isNational: false, states: ["Selangor"], cat: "General" },
-            { name: "Sultan of Johor's Birthday", date: "2026-03-23", isNational: false, states: ["Johor"], cat: "General" },
-            { name: "Governor of Sabah's Birthday", date: "2026-10-03", isNational: false, states: ["Sabah"], cat: "General" }
+            { name: "New Year's Day", date: "2026-01-01", isNational: true },
+            { name: "Federal Territory Day", date: "2026-02-01", isNational: false, states: ["Kuala Lumpur", "Labuan", "Putrajaya"] },
+            { name: "Thaipusam", date: "2026-02-01", isNational: false, states: ["Kuala Lumpur", "Putrajaya", "Selangor", "Penang", "Perak", "Johor", "Negeri Sembilan"] },
+            { name: "Chinese New Year", date: "2026-02-17", isNational: true },
+            { name: "Hari Raya Aidilfitri", date: "2026-03-20", isNational: true },
+            { name: "Labour Day", date: "2026-05-01", isNational: true },
+            { name: "Hari Raya Haji", date: "2026-05-27", isNational: true },
+            { name: "Pesta Kaamatan", date: "2026-05-30", isNational: false, states: ["Sabah", "Labuan"] },
+            { name: "Wesak Day", date: "2026-05-31", isNational: true },
+            { name: "Hari Gawai", date: "2026-06-01", isNational: false, states: ["Sarawak"] },
+            { name: "Awal Muharram", date: "2026-06-17", isNational: true },
+            { name: "Maulidur Rasul", date: "2026-08-25", isNational: true },
+            { name: "National Day", date: "2026-08-31", isNational: true },
+            { name: "Malaysia Day", date: "2026-09-16", isNational: true },
+            { name: "Deepavali", date: "2026-11-08", isNational: true },
+            { name: "Christmas Day", date: "2026-12-25", isNational: true }
         ],
         "2027": [
-            { name: "New Year's Day", date: "2027-01-01", isNational: true, cat: "General" },
-            { name: "Chinese New Year", date: "2027-02-06", isNational: true, cat: "CNY" },
-            { name: "Federal Territory Day", date: "2027-02-01", isNational: false, states: ["Kuala Lumpur", "Labuan", "Putrajaya"], cat: "General" },
-            { name: "Hari Raya Aidilfitri", date: "2027-03-10", isNational: true, cat: "Raya" },
-            { name: "Labour Day", date: "2027-05-01", isNational: true, cat: "General" },
-            { name: "National Day", date: "2027-08-31", isNational: true, cat: "Merdeka" },
-            { name: "Malaysia Day", date: "2027-09-16", isNational: true, cat: "MalaysiaDay" },
-            { name: "Christmas Day", date: "2027-12-25", isNational: true, cat: "Christmas" }
+            { name: "New Year's Day", date: "2027-01-01", isNational: true },
+            { name: "Federal Territory Day", date: "2027-02-01", isNational: false, states: ["Kuala Lumpur", "Labuan", "Putrajaya"] },
+            { name: "Chinese New Year", date: "2027-02-06", isNational: true },
+            { name: "Hari Raya Aidilfitri", date: "2027-03-10", isNational: true },
+            { name: "Labour Day", date: "2027-05-01", isNational: true },
+            { name: "National Day", date: "2027-08-31", isNational: true },
+            { name: "Malaysia Day", date: "2027-09-16", isNational: true },
+            { name: "Christmas Day", date: "2027-12-25", isNational: true }
         ]
     };
 
-    const CONTENT = {
-        "CNY": { 
-            about: "Chinese New Year, also known as the Spring Festival, marks the beginning of the new year on the traditional lunisolar Chinese calendar. It is a 15-day celebration focused on family reunions, honoring ancestors, and ushering in good luck. Traditions include the Reunion Dinner on the eve, giving red envelopes (Ang Pow), and vibrant lion or dragon dances.", 
-            greet: ["Gong Xi Fa Cai! May the new year bring you immense wealth, health, and happiness! 🧧"] 
+    // 2. INFORMATION BANK (No categories. Names match DB exactly)
+    const INFO_BANK = {
+        "New Year's Day": {
+            about: "Marks the first day of the year in the Gregorian calendar. In Malaysia, it is a global celebration of fresh starts and public festivities.",
+            greet: "Happy New Year! Wishing you 365 days of happiness and success. 🎆"
         },
-        "Raya": { 
-            about: "Hari Raya Aidilfitri celebrates the conclusion of Ramadan, the holy month of fasting. It is a season of forgiveness and renewal. Malaysians traditionally hold 'Open Houses,' welcoming friends and neighbors of all races to share traditional food like Ketupat, Rendang, and Lemang. \n\nHari Raya Haji (Eid al-Adha) commemorates the Prophet Ibrahim's willingness to sacrifice his son as an act of obedience to God. It marks the conclusion of the annual Hajj pilgrimage to Mecca. The day is observed with prayers and the 'Qurbani' (sacrifice), where meat is distributed to the needy to symbolize charity and equality.", 
-            greet: ["Selamat Hari Raya Aidilfitri! Maaf Zahir dan Batin to you and your loved ones. 🌙", "Selamat Hari Raya Haji! May your sacrifices be rewarded and your heart filled with peace."] 
+        "Federal Territory Day": {
+            about: "Commemorates the formation of Kuala Lumpur, Labuan, and Putrajaya as Federal Territories. It honors the development of Malaysia's administrative centers.",
+            greet: "Happy Federal Territory Day! Celebrating our vibrant federal cities. 🏙️"
         },
-        "Kaamatan": { 
-            about: "Pesta Kaamatan is a harvest thanksgiving festival celebrated by the Kadazan-Dusun community in Sabah. It honors the legend of Huminodun and the Rice Spirit, Bambazon. Key events include the Magavau ritual, Sugandoi singing competitions, and the Unduk Ngadau (Harvest Queen) pageant.", 
-            greet: ["Kotobian Tadau Tagazo Do Kaamatan! May your harvest be bountiful and your spirit strong. 🌾"] 
+        "Thaipusam": {
+            about: "A Hindu festival honoring Lord Murugan's victory over evil. Celebrated with deep devotion and colorful chariot processions, notably at Batu Caves.",
+            greet: "Wishing you a meaningful and blessed Thaipusam. 🪔"
         },
-        "Gawai": { 
-            about: "Hari Gawai is the harvest festival of the Dayak people in Sarawak. It marks the end of the harvesting season and is a time of thanksgiving. Celebrations involve traditional dances (Ngajat), music, and sharing of Tuak (rice wine) within the longhouse community.", 
-            greet: ["Gayu Guru, Gerai Nyamai! Wishing you long life, health, and great prosperity. 🌾"] 
+        "Chinese New Year": {
+            about: "The Spring Festival marking the new lunar year. A time for family reunions, lion dances, and sharing prosperity with loved ones.",
+            greet: "Gong Xi Fa Cai! May the new year bring you wealth and health! 🧧"
         },
-        "Merdeka": { 
-            about: "Hari Merdeka commemorates the independence of the Federation of Malaya from British rule on August 31, 1957. It is a day of national unity, famously symbolized by the seven shouts of 'Merdeka!' by Tunku Abdul Rahman at Stadium Merdeka.", 
-            greet: ["Selamat Hari Merdeka! Let us celebrate the freedom and unity of our beloved nation. 🇲🇾"] 
+        "Hari Raya Aidilfitri": {
+            about: "Marks the end of Ramadan, the holy month of fasting. A season of forgiveness, renewal, and 'Open Houses' sharing traditional food.",
+            greet: "Selamat Hari Raya Aidilfitri! Maaf Zahir dan Batin to you and your loved ones. 🌙"
         },
-        "MalaysiaDay": { 
-            about: "Malaysia Day commemorates the establishment of the Malaysian federation on September 16, 1963. It celebrates the joining together of Malaya, North Borneo (Sabah), and Sarawak into a single nation, honoring the diversity of its people.", 
-            greet: ["Happy Malaysia Day! One heart, one soul, one beautiful Malaysia. 🇲🇾"] 
+        "Labour Day": {
+            about: "A national holiday honoring the contributions of workers to the nation's progress and the achievements of the workforce.",
+            greet: "Happy Labour Day! To all the hard workers, enjoy your well-deserved break! 👷"
         },
-        "Deepavali": { 
-            about: "Deepavali, or the Festival of Lights, signifies the victory of light over darkness and good over evil. Hindu families decorate their homes with oil lamps (diyas) and vibrant Kolam floor art made from colored rice. It is a time for family gatherings and festive sweets.", 
-            greet: ["Happy Deepavali! May the divine light bring joy and success into your home. 🪔"] 
+        "Hari Raya Haji": {
+            about: "Commemorates Prophet Ibrahim's faith and obedience to God. Observed with prayers and the distribution of meat to the community.",
+            greet: "Selamat Hari Raya Haji! Wishing you a blessed day of reflection and sacrifice. 🕋"
         },
-        "Christmas": { 
-            about: "Christmas celebrates the birth of Jesus Christ. In Malaysia, it is a joyful season for the Christian community and is celebrated by all with gift-giving, festive decorations in malls, and sharing meals with friends and family.", 
-            greet: ["Merry Christmas! May your home be filled with the joy of the season and the warmth of love. 🎄"] 
+        "Pesta Kaamatan": {
+            about: "Harvest thanksgiving festival of the Kadazan-Dusun in Sabah. It honors the Rice Spirit, Bambazon, and Sabah's rich heritage.",
+            greet: "Kotobian Tadau Tagazo Do Kaamatan! May your harvest be bountiful. 🌾"
         },
-        "General": { 
-            about: "New Year's Day (January 1st) follows the Gregorian calendar and is celebrated globally to mark the start of a fresh year with resolutions and festivities. \n\nFederal Territory Day (February 1st) commemorates the transfer of Kuala Lumpur (1974), Labuan (1984), and Putrajaya (2001) to the Federal Government, serving as a symbol of national administration and unity.\n\nAwal Muharram marks the Islamic New Year, the first day of the month of Muharram. It commemorates the Hijrah (migration) of Prophet Muhammad from Mecca to Medina, representing a time of reflection and new spiritual beginnings.\n\nMaulidur Rasul is the observance of the birthday of Prophet Muhammad. In Malaysia, it is marked by processions and 'selawat' (praises) to honor his teachings of compassion and mercy.", 
-            greet: ["Happy New Year! May this year bring you new hope and success. 🎆", "Happy Federal Territory Day! Celebrating our vibrant cities. 🏙️", "Salam Awal Muharram. May this new Hijri year bring peace.", "Salam Maulidur Rasul. Let us reflect on the wisdom of the Prophet."] 
+        "Wesak Day": {
+            about: "Commemorates the birth, enlightenment, and passing of Gautama Buddha. Observed with prayers and acts of kindness to promote peace.",
+            greet: "Happy Wesak Day! May you find peace and enlightenment on this sacred day. ☸️"
+        },
+        "Hari Gawai": {
+            about: "Harvest festival of the Dayak community in Sarawak. A time of thanksgiving featuring traditional music and the Ngajat dance.",
+            greet: "Gayu Guru, Gerai Nyamai! Wishing you long life and great prosperity. 🌾"
+        },
+        "Awal Muharram": {
+            about: "The Islamic New Year. Commemorates the Hijrah (migration) of Prophet Muhammad and is a time for spiritual reflection.",
+            greet: "Salam Awal Muharram. May this new Hijri year bring peace and spiritual growth. 🕌"
+        },
+        "Maulidur Rasul": {
+            about: "Celebrates the birthday of Prophet Muhammad. Observed with processions and praises to honor his legacy of mercy and kindness.",
+            greet: "Salam Maulidur Rasul. Let us reflect on the mercy and wisdom of the Prophet. 📜"
+        },
+        "National Day": {
+            about: "Hari Merdeka commemorates Malaysia's independence from British rule in 1957. A day of deep patriotic pride and unity.",
+            greet: "Selamat Hari Merdeka! Let us celebrate the spirit of our independence. 🇲🇾"
+        },
+        "Malaysia Day": {
+            about: "Commemorates the formation of Malaysia in 1963, joining Malaya, Sabah, and Sarawak into one unified nation.",
+            greet: "Happy Malaysia Day! One heart, one soul, one beautiful Malaysia. 🇲🇾"
+        },
+        "Deepavali": {
+            about: "The Festival of Lights celebrating the victory of light over darkness. Homes are decorated with oil lamps and Kolam art.",
+            greet: "Happy Deepavali! May the divine light bring joy and success into your home. 🪔"
+        },
+        "Christmas Day": {
+            about: "Celebrates the birth of Jesus Christ. A joyful season of gift-giving and sharing festive meals with friends and family.",
+            greet: "Merry Christmas! May your home be filled with the joy of the season. 🎄"
         }
     };
 
@@ -199,16 +218,9 @@
             
             if (selectedState === "National" ? isNational : (isNational || isStateMatch)) {
                 const d = new Date(h.date);
-                const info = CONTENT[h.cat] || CONTENT["General"];
+                // THE 1-TO-1 LOGIC: It finds the exact entry for the holiday name.
+                const info = INFO_BANK[h.name];
                 
-                // Select specific greeting based on keyword matching
-                let greetingText = info.greet[0];
-                if (h.name.includes("Haji")) greetingText = info.greet[1] || info.greet[0];
-                else if (h.name.includes("New Year")) greetingText = info.greet[0];
-                else if (h.name.includes("Federal Territory")) greetingText = info.greet[1] || info.greet[0];
-                else if (h.name.includes("Muharram")) greetingText = info.greet[2] || info.greet[0];
-                else if (h.name.includes("Maulidur")) greetingText = info.greet[3] || info.greet[0];
-
                 const card = document.createElement('div');
                 card.className = `holiday-card ${isNational ? 'national' : 'state'}`;
                 card.onclick = () => card.classList.toggle('active');
@@ -223,7 +235,7 @@
                     <div class="drill-down">
                         <span class="section-label">Background</span>
                         <p style="margin:0; font-size:0.95rem; line-height: 1.5;">${info.about}</p>
-                        <div class="greeting-box">"${greetingText}"</div>
+                        <div class="greeting-box">"${info.greet}"</div>
                     </div>
                 `;
                 list.appendChild(card);
